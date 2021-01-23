@@ -3,26 +3,27 @@
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Test App</a>
     <div class="navbar-nav mr-auto">
-        <a class="nav-link" href="#">Home</a>
+        <a class="nav-link" href="{% url 'home' %}">Home</a>
     </div>
-    <a href="#" class="navbar-text">Log In</a>
+    <a href="{% url 'login' %}" class="navbar-text">Log In</a>
 </nav>
 {% include 'html/messages.html' %}
 <h1 class="mt-2 mb-5">Sign In</h1>
 <div class="row">
     <div class="col-6 ml-5">
         <form action="" method="POST"> 
-        <div class="form-group">
-            <label for="email-signin">Email address</label>
-            <input type="email" class="form-control" id="email-signin" name="email-signin" placeholder="Enter email">
-        </div>
-        <div class="form-group">
-            <label for="password-signin">Password</label>
-            <input type="password" class="form-control" id="password-signin" name="password-signin" placeholder="Password">
-        </div>
-        <div class="col text-right">
-            <button type="submit" class="btn btn-primary">Log In</button>
-        </div>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email-signin">Email address</label>
+                <input type="email" class="form-control" id="email-signin" name="email-signin" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label for="password-signin">Password</label>
+                <input type="password" class="form-control" id="password-signin" name="password-signin" placeholder="Password">
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Log In</button>
+            </div>
         </form>
     </div>
 </div>
