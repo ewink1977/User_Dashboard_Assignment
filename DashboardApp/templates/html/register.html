@@ -12,7 +12,7 @@
 <div class="row">
     <div class="col-6 ml-5">
         <small class="form-text text-muted">All fields are REQUIRED.</small>
-        <form action="" method="POST">
+        <form action="{% url 'handle-reg' %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <label for="register-email">email Address</label>

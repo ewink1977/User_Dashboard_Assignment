@@ -1,0 +1,12 @@
+{% extends 'html/base.html' %}
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Test App</a>
+    <div class="navbar-nav mr-auto">
+        <a class="nav-link" href="{% url 'home' %}">Home</a>
+    </div>
+    <a href="{% url 'login' %}" class="navbar-text">Log In</a>
+</nav>
+{% include 'html/messages.html' %}
+<h1>{{current_user.first_name}} DISPLAY SUCCESSFUL</h1>
+{% endblock content %}
