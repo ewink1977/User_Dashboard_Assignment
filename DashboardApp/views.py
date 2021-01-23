@@ -17,6 +17,12 @@ def display_login(request):
     }
     return render(request, 'html/sign_in.html', context)
 
+def logoff(request):
+    del request.session['userid']
+    del request.session['userlevel']
+    del request.session['username']
+    return redirect('home')
+
 def display_register(request):
     context = {
         'page_title': 'Register For An Account!'
@@ -29,6 +35,8 @@ def display_user_dashboard(request):
         'current_user': User.objects.get(id = request.session['userid'])
     }
     return render(request, 'html/user_dashboard.html', context)
+
+
 
 
 # POST POST POST POST POST POST POST
@@ -61,4 +69,25 @@ def handle_registration(request):
         return redirect('dashboard')
 
 def handle_login(request):
-    pass
+    if request.method == 'POST':
+        logging_in_user = User.objects.filter(email = request.POST['email-signin'])
+        if logging_in_user:
+            user = logging_in_user[0]
+            if bcrypt.checkpw(
+                request.POST['password-signin'].encode(),
+                user.password.encode()
+            ):
+                request.session['userid'] = user.id
+                request.session['userlevel'] = user.user_level
+                request.session['username'] = user.first_name
+                messages.success(request, f"{ user.email } has successfully logged in!")
+                return redirect('dashboard')
+            else:
+                messages.error(request, 'Unable to log in. The password you entered is incorrect.', extra_tags = 'danger')
+                return redirect('login')
+        else:
+            messages.error(request, "That email was not found in our database. Please retry or register for a new account!", extra_tags = 'danger')
+            return redirect('login')
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('login')
