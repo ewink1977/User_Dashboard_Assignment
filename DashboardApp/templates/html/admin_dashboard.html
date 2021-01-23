@@ -61,5 +61,48 @@
 <div id="confirm-text" title="Confirm User Deletion">
     <p>Are you sure you want to delete this user? This cannot be undone.</p>
 </div>
-<script src="{% static 'js/confirm.js' %}"></script>
+<!-- Deletion Pop Up Script -->
+<script>
+    $(document).ready(function() {
+    $("#confirm-text").dialog({
+        resizable: false,
+        autoOpen: false,
+        show: false,
+        height: "auto",
+        width: 400,
+        modal: true,
+        classes: {
+            "ui-dialog": "modal-content",
+            "ui-dialog-titlebar": "modal-header",
+            "ui-dialog-title": "modal-title",
+            "ui-dialog-titlebar-close": "close",
+            "ui-dialog-content": "modal-body",
+            "ui-dialog-buttonpane": "modal-footer"
+        },
+    });
+
+$(".deletion").click(function(e) {
+    e.preventDefault();
+    var theHREF = $(this).attr("href")
+    var CSRF = {
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    }
+
+    // Turned YES into POST request
+
+    $("#confirm-text").dialog('option', 'buttons', {
+        "Confirm User Deletion": function() {
+                $.post(theHREF, CSRF);
+                $( this ).dialog("close");
+                location.reload();
+            },
+            Cancel: function() {
+                $( this ).dialog("close");
+            }
+    });
+
+        $("#confirm-text").dialog("open");
+    });
+});
+</script>
 {% endblock content %}

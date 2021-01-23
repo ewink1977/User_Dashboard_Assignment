@@ -106,4 +106,7 @@ def handle_login(request):
         return redirect('login')
 
 def delete_user(request, userid):
-    return HttpResponse(f'If this page was complete, user number {userid} would have been deleted!')
+    if request.method == 'POST':
+        return HttpResponse(f'If this page was complete, user number {userid} would have been deleted!')
+    else:
+        return redirect('dashboard')

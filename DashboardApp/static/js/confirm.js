@@ -1,3 +1,5 @@
+// Unused right now due to need for CSRF token
+
 $(document).ready(function() {
     $("#confirm-text").dialog({
         resizable: false,
@@ -22,7 +24,7 @@ $(".deletion").click(function(e) {
 
     $("#confirm-text").dialog('option', 'buttons', {
         "Confirm User Deletion": function() {
-                window.location.href = theHREF;
+                $.post(theHREF);
             },
             Cancel: function() {
                 $( this ).dialog("close");
