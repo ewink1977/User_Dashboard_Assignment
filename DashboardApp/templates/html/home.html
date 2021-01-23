@@ -1,18 +1,34 @@
 {% extends 'html/base.html' %}
 {% block content %}
-<nav class="navbar navbar-dark bg-dark justify-content-between">
+<nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Test App</a>
-    <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-        </ul>
+    <div class="navbar-nav mr-auto">
+        <a class="nav-link" href="#">Home</a>
     </div>
     <a href="#" class="navbar-text">Log In</a>
 </nav>
-
-
-
-
+{% include 'html/messages.html' %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to the test!</h1>
+    <p class="lead">This is a cool application using MVC framework. This application was built by edubya (Erin Winking)!</p>
+    <hr class="my-4">
+    <p>Some details below, or click the log in button to log in or create an account!</p>
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="#" role="button">Log In</a>
+    </p>
+</div>
+<div class="row">
+    <div class="col-4">
+        <h2>Manage Users</h2>
+        <p>Using this application you'll be able to add, remove, and edit users for the application!</p>
+    </div>
+    <div class="col-4">
+        <h2>Leave Messages</h2>
+        <p>Users are able to leave a message for another user using this application!</p>
+    </div>
+    <div class="col-4">
+        <h2>Edit User Information</h2>
+        <p>Admins are able to edit another user's information (email address, first name, last name, etc.).</p>
+    </div>
+</div>
 {% endblock content %}
