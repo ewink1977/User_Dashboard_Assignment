@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
 from .models import User, WallPost, Comment
 import bcrypt
@@ -36,8 +36,21 @@ def display_user_dashboard(request):
     }
     return render(request, 'html/user_dashboard.html', context)
 
+def display_admin_dashboard(request):
+    context = {
+        'users': User.objects.all(),
+        'current_user': User.objects.get(id = request.session['userid'])
+    }
+    return render(request, 'html/admin_dashboard.html', context)
 
+def show_user_profile(request):
+    pass
 
+def edit_user_profile(request, userid):
+    pass
+
+def show_user_wall(request, userid):
+    pass
 
 # POST POST POST POST POST POST POST
 
@@ -91,3 +104,6 @@ def handle_login(request):
     else:
         messages.error(request, "Invalid request.", extra_tags = 'danger')
         return redirect('login')
+
+def delete_user(request, userid):
+    return HttpResponse(f'If this page was complete, user number {userid} would have been deleted!')
