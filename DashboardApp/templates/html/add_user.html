@@ -1,0 +1,61 @@
+{% extends 'html/base.html' %}
+{% load static %}
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'home' %}">Test App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Admin Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Profile</a>
+            </li>
+        </ul>
+    <a href="{% url 'logoff' %}" class="navbar-text mr-5">Log Off</a>
+</nav>
+{% include 'html/messages.html' %}
+<div class="row justify-content-between align-items-center mt-5">
+    <div class="col-6">
+        <h2>Add A User</h2>
+    </div>
+    <div class="col-6 text-right">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary active" role="button" aria-pressed="true">Back To Dashboard</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6 ml-5">
+        <small class="form-text text-muted">All fields are REQUIRED.</small>
+        <form action="{% url 'handle_new_user' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="register-email">email Address</label>
+                <input type="email" name="register-email" id="register-email" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="register-first-name">First Name</label>
+                <input type="text" name="register-first-name" id="register-first-name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="register-last-name">Last Name</label>
+                <input type="text" name="register-last-name" id="register-last-name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" name="register-password" id="register-password" aria-describedby="password-help" class="form-control">
+                <small id="password-help" class="form-text text-muted">Please use a unique password that is at least 8 characters long.</small>
+            </div>
+            <div class="form-group">
+                <label for="register-confirm-pw">Confirm Password</label>
+                <input type="password" name="register-confirm-pw" id="register-confirm-pw" class="form-control">
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Add User</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

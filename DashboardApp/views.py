@@ -37,17 +37,38 @@ def display_user_dashboard(request):
     return render(request, 'html/user_dashboard.html', context)
 
 def display_admin_dashboard(request):
+    if not request.session['userlevel'] == 9:
+        messages.error(request, 'Sorry, you must be an administrator to access this page.', extra_tags = 'danger')
+        return redirect('dashboard')
     context = {
         'users': User.objects.all(),
-        'current_user': User.objects.get(id = request.session['userid'])
+        'current_user': User.objects.get(id = request.session['userid']),
+        'page_title': 'Admin Dashboard'
     }
     return render(request, 'html/admin_dashboard.html', context)
 
+def show_add_user(request):
+    if not request.session['userlevel'] == 9:
+        messages.error(request, 'Sorry, you must be an administrator to access this page.', extra_tags = 'danger')
+        return redirect('dashboard')
+    context = {
+        'page_title': f'Add a User'
+    }
+    return render(request, 'html/add_user.html', context)
+
+# Function for admin editing of users.
+def edit_user_profile(request, userid):
+    context = {
+        'user': User.objects.get(id = userid),
+        'page_title': f'Edit User ID #{userid}'
+    }
+    return render(request, 'html/edit_user.html', context)
+
+# Function for user editing of their own profile. 
 def show_user_profile(request):
     pass
 
-def edit_user_profile(request, userid):
-    pass
+
 
 def show_user_wall(request, userid):
     pass
@@ -105,8 +126,62 @@ def handle_login(request):
         messages.error(request, "Invalid request.", extra_tags = 'danger')
         return redirect('login')
 
+def handle_add_user(request):
+    if request.method == 'POST':
+        errors = User.objects.validator(request.POST)
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value, extra_tags='danger')
+            return redirect('login')
+        prehash = request.POST['register-password']
+        hashedPW = bcrypt.hashpw(prehash.encode(), bcrypt.gensalt()).decode()
+        newuser = User.objects.create(
+            email = request.POST['register-email'],
+            first_name = request.POST['register-first-name'],
+            last_name = request.POST['register-last-name'],
+            password = hashedPW,
+            user_level = 1
+        )
+        messages.success(request, f"{ newuser.email } has been successfully created!")
+        return redirect('admin_dashboard')
+
 def delete_user(request, userid):
     if request.method == 'POST':
-        return HttpResponse(f'If this page was complete, user number {userid} would have been deleted!')
+        user_to_destroy = User.objects.get(id = userid)
+        user_to_destroy.delete()
+        messages.success(request, f"{ user_to_destroy.email } has been successfully deleted!")
+        return redirect('admin_dashboard')
     else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
+def process_edit_user_profile(request, userid):
+    if request.method == 'POST':
+        user_to_update = User.objects.get(id = userid)
+        user_to_update.email = request.POST['email']
+        user_to_update.first_name = request.POST['first-name']
+        user_to_update.last_name = request.POST['last-name']
+        user_to_update.user_level = request.POST['user-level']
+        user_to_update.save()
+        messages.success(request, f"User { user_to_update.email } has been successfully updated!")
+        return redirect('edit_user_profile', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
+def process_edit_user_password(request, userid):
+    if request.method == 'POST':
+        errors = User.objects.validator(request.POST)
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value, extra_tags='danger')
+            return redirect('login')
+        prehash = request.POST['password']
+        hashedPW = bcrypt.hashpw(prehash.encode(), bcrypt.gensalt()).decode()
+        user_to_update = User.objects.get(id = userid)
+        user_to_update.password = hashedPW
+        messages.success(request, f"The password for { user_to_update.email } has been successfully updated!")
+        return redirect('edit_user_profile', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
         return redirect('dashboard')
