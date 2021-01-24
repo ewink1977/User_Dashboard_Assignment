@@ -32,7 +32,8 @@ def display_register(request):
 def display_user_dashboard(request):
     context = {
         'users': User.objects.all(),
-        'current_user': User.objects.get(id = request.session['userid'])
+        'current_user': User.objects.get(id = request.session['userid']),
+        'page_title': 'User Dasboard!'
     }
     return render(request, 'html/user_dashboard.html', context)
 
@@ -58,6 +59,9 @@ def show_add_user(request):
 
 # Function for admin editing of users.
 def edit_user_profile(request, userid):
+    if not request.session['userlevel'] == 9:
+        messages.error(request, 'Sorry, you must be an administrator to access this page.', extra_tags = 'danger')
+        return redirect('dashboard')
     context = {
         'user': User.objects.get(id = userid),
         'page_title': f'Edit User ID #{userid}'
@@ -65,9 +69,12 @@ def edit_user_profile(request, userid):
     return render(request, 'html/edit_user.html', context)
 
 # Function for user editing of their own profile. 
-def show_user_profile(request):
-    pass
-
+def show_user_profile(request, userid):
+    context = {
+        'user': User.objects.get(id = userid),
+        'page_title': 'User Profile!'
+    }
+    return render(request, 'html/self_profile.html', context)
 
 
 def show_user_wall(request, userid):
@@ -169,6 +176,18 @@ def process_edit_user_profile(request, userid):
         messages.error(request, "Invalid request.", extra_tags = 'danger')
         return redirect('dashboard')
 
+def process_self_edit_profile(request, userid):
+    if request.method == 'POST':
+        user_to_update = User.objects.get(id = userid)
+        user_to_update.email = request.POST['email']
+        user_to_update.first_name = request.POST['first-name']
+        user_to_update.last_name = request.POST['last-name']
+        messages.success(request, f"User { user_to_update.email } has been successfully updated!")
+        return redirect('user_profile', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
 def process_edit_user_password(request, userid):
     if request.method == 'POST':
         errors = User.objects.validator(request.POST)
@@ -182,6 +201,34 @@ def process_edit_user_password(request, userid):
         user_to_update.password = hashedPW
         messages.success(request, f"The password for { user_to_update.email } has been successfully updated!")
         return redirect('edit_user_profile', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
+def process_self_edit_password(request, userid):
+    if request.method == 'POST':
+        errors = User.objects.validator(request.POST)
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value, extra_tags='danger')
+            return redirect('login')
+        prehash = request.POST['password']
+        hashedPW = bcrypt.hashpw(prehash.encode(), bcrypt.gensalt()).decode()
+        user_to_update = User.objects.get(id = userid)
+        user_to_update.password = hashedPW
+        messages.success(request, f"The password for { user_to_update.email } has been successfully updated!")
+        return redirect('user_profile', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
+def process_self_edit_description(request, userid):
+    if request.method == 'POST':
+        user_to_update = User.objects.get(id = userid)
+        user_to_update.description = request.POST['description']
+        user_to_update.save()
+        messages.success(request, f"The description for { user_to_update.email } has been successfully updated!")
+        return redirect('user_profile', userid)
     else:
         messages.error(request, "Invalid request.", extra_tags = 'danger')
         return redirect('dashboard')

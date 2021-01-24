@@ -1,1 +1,82 @@
+{% extends 'html/base.html' %}
+{% block content %}
 <!-- This page is for the users to edit their own profile. -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'home' %}">Test App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Profile<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    <a href="{% url 'logoff' %}" class="navbar-text mr-5">Log Off</a>
+</nav>
+{% include 'html/messages.html' %}
+<div class="row justify-content-between align-items-center mt-5">
+    <div class="col">
+        <h2>Edit Yourself!</h2>
+    </div>
+</div>
+<div class="row justify-content-around">
+    <div class="col-5 border border-dark p-2">
+        <h4>Edit Information</h2>
+        <form action="{% url 'self_edit_profile' user.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email">email Address</label>
+                <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}">
+            </div>
+            <div class="form-group">
+                <label for="first-name">First Name</label>
+                <input type="text" name="first-name" id="first-name" class="form-control" value="{{ user.first_name }}">
+            </div>
+            <div class="form-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" name="last-name" id="last-name" class="form-control" value="{{ user.last_name }}">
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-5 border border-dark p-2">
+        <h4>Edit Password</h2>
+        <form action="{% url 'process_edit_user_password' user.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" aria-describedby="password-help" class="form-control">
+                <small id="password-help" class="form-text text-muted">Please use a unique password that is at least 8 characters long.</small>
+            </div>
+            <div class="form-group">
+                <label for="confirm-pw">Confirm Password</label>
+                <input type="password" name="confirm-pw" id="confirm-pw" class="form-control">
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row mt-2 justify-content-center">
+    <div class="col-8 border border-dark p-2">
+        <h4>Update Description</h4>
+        <form action="{% url 'self_edit_description' user.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ user.description }}</textarea>
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Update Description</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

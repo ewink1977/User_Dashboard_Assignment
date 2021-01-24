@@ -26,8 +26,8 @@
         <a href="{% url 'admin_dashboard' %}" class="btn btn-primary active" role="button" aria-pressed="true">Return To Dashboard</a>
     </div>
 </div>
-<div class="row justify-content-between">
-    <div class="col-5 border-dark ">
+<div class="row justify-content-around">
+    <div class="col-5 border border-dark">
         <h2>Edit Information</h2>
         <form action="{% url 'process_edit_user_profile' user.id %}" method="POST">
             {% csrf_token %}
@@ -60,7 +60,7 @@
             </div>
         </form>
     </div>
-    <div class="col-5 border-dark">
+    <div class="col-5 border border-dark">
         <h2>Edit Password</h2>
         <form action="{% url 'process_edit_user_password' user.id %}" method="post">
             {% csrf_token %}

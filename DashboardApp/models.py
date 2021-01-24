@@ -11,6 +11,10 @@ class UserManager(models.Manager):
         email_check = User.objects.filter(email = postData['register-email'])
         if email_check == postData['register-email']:
             errors['email'] = 'Email already exists. Please log in or use another email.'
+        if len(postData['register-first-name']) < 1:
+            errors['firstname'] = 'You cannot leave your first name blank.'
+        if len(postData['register-last-name']) < 1:
+            errors['lastname'] = 'You cannot leave your last name blank.'
         if not postData['register-password'] == postData['register-confirm-pw']:
             errors['confirmpassword'] = 'Password mismatch! Please try again!'
         if len(postData['register-password']) < 8:
