@@ -26,5 +26,7 @@ urlpatterns = [
     path('users/new/process', views.handle_add_user, name = 'handle_new_user'),
     # Wall Posts And Comments
     path('users/show/<int:userid>', views.show_user_wall, name = 'show_user_wall'),
+    path('users/show/<int:userid>/post2wall', views.process_WallPost, name = 'post_to_wall'),
+    path('users/show/<int:userid>/comment', views.process_CommentAdd, name = 'post_comment'),
 ]
 

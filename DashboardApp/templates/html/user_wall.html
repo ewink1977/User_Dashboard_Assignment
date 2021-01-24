@@ -1,0 +1,102 @@
+{% extends 'html/base.html' %}
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'home' %}">Test App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_profile' current_user.id %}">Profile</a>
+            </li>
+        </ul>
+    {% if current_user %}
+    <a href="{% url 'logoff' %}" class="navbar-text mr-5">Log Off</a>
+    {% else %}
+    <a href="{% url 'login' %}" class="navbar-text mr-5">Log In</a>
+    {% endif %}
+</nav>
+{% include 'html/messages.html' %}
+<h3 class="mt-2">{{ wall_owner.first_name }} {{ wall_owner.last_name }}</h3>
+<div class="row p-1">
+    <div class="col-2 p-2">
+        <p>Registered at:</p>
+        <p>email address:</p>
+        <p>Description:</p>
+    </div>
+    <div class="col-4 p-2">
+        <p>{{ wall_owner.created_at|date:'F jS, Y'}}</p>
+        <p>{{ wall_owner.email }}</p>
+        <p>{{ wall_owner.description }}</p>
+    </div>
+</div>
+<div class="row mt-1 p-1">
+    <div class="col">
+        <form action="{% url 'post_to_wall' wall_owner.id %}" method="POST">
+            <div class="form-group">
+                {% csrf_token %}
+                <h2>Leave a message for {{ wall_owner.first_name }}</h2>
+                <textarea class="form-control" name="wall-post" id="wall-post" rows="3"></textarea>
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Post</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% load humanize %}
+{% if wall_owner.WallOwner.all %}
+{% for post_obj in wall_owner.WallOwner.all %}
+<div class="row mt-1 p-1 justify-content-between">
+    <div class="col">
+        <p><a href="{% url 'show_user_wall' post_obj.poster.id %}">{{ post_obj.poster.first_name }} {{ post_obj.poster.last_name }}</a> wrote:</p>
+    </div>
+    <div class="col text-right">
+        <p><em>{{ post_obj.created_at|naturaltime }}</em></p>
+    </div>
+</div>
+<div class="row py-3 border border-dark">
+    <div class="col">
+        <p>{{ post_obj.message }}</p>
+    </div>
+</div>
+{% if post_obj.CommentPost.all %}
+{% for comment_obj in post_obj.CommentPost.all %}
+<div class="row ml-5 mt-1 p-1 justify-content-between">
+    <div class="col">
+        <p><a href="{% url 'show_user_wall' comment_obj.user.id %}">{{ comment_obj.user.first_name }} {{ comment_obj.user.last_name }}</a> wrote:</p>
+    </div>
+    <div class="col text-right">
+        <p><em>{{ comment_obj.created_at|naturaltime }}</em></p>
+    </div>
+</div>
+<div class="row ml-5 py-3 border border-dark">
+    <div class="col">
+        <p>{{ comment_obj.comment }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+<div class="row ml-5 mt-1 justify-content-end">
+    <div class="col">
+        <form action="{% url 'post_comment' wall_owner.id %}" method="POST">
+            <div class="form-group">
+                {% csrf_token %}
+                <p>Add a comment!</p>
+                <textarea class="form-control" name="comment-post" id="comment-post" rows="3">Reply to message...</textarea>
+                <input type="hidden" name="message-id" value="{{ post_obj.id }}">
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Post</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+<footer class="row mb-5"></footer>
+{% endblock content %}

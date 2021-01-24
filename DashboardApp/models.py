@@ -36,9 +36,14 @@ class WallPost(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
-    user = models.ForeignKey(
+    owner = models.ForeignKey(
         User,
-        related_name = 'WallPost',
+        related_name = 'WallOwner',
+        on_delete = CASCADE
+    )
+    poster = models.ForeignKey(
+        User,
+        related_name = 'WallPostAuthor',
         on_delete = CASCADE
     )
 

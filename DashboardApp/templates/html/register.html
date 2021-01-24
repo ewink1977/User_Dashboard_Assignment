@@ -1,7 +1,7 @@
 {% extends 'html/base.html' %}
 {% block content %}
 <nav class="navbar navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Test App</a>
+    <a class="navbar-brand" href="{% url 'home' %}">Test App</a>
     <div class="navbar-nav mr-auto">
         <a class="nav-link" href="{% url 'home' %}">Home</a>
     </div>

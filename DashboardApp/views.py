@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import User, WallPost, Comment
 import bcrypt
@@ -76,9 +76,14 @@ def show_user_profile(request, userid):
     }
     return render(request, 'html/self_profile.html', context)
 
-
 def show_user_wall(request, userid):
-    pass
+    wall_owner = User.objects.get(id = userid)
+    context = {
+        'wall_owner': wall_owner,
+        'current_user': User.objects.get(id = request.session['userid']),
+        'page_title': f"{ wall_owner.first_name }'s Wall!"
+    }
+    return render(request, 'html/user_wall.html', context)
 
 # POST POST POST POST POST POST POST
 
@@ -229,6 +234,36 @@ def process_self_edit_description(request, userid):
         user_to_update.save()
         messages.success(request, f"The description for { user_to_update.email } has been successfully updated!")
         return redirect('user_profile', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
+def process_WallPost(request, userid):
+    if request.method == 'POST':
+        poster = User.objects.get(id = request.session['userid'])
+        wall = User.objects.get(id = userid)
+        newpost = WallPost.objects.create(
+            message = request.POST['wall-post'],
+            owner = wall,
+            poster = poster
+        )
+        messages.success(request, f"Nifty. The new post to { newpost.owner.first_name}'s wall from { newpost.poster.first_name} has been successfully added!")
+        return redirect('show_user_wall', userid)
+    else:
+        messages.error(request, "Invalid request.", extra_tags = 'danger')
+        return redirect('dashboard')
+
+def process_CommentAdd(request, userid):
+    if request.method == 'POST':
+        commentor = User.objects.get(id = request.session['userid'])
+        message = WallPost.objects.get(id = request.POST['message-id'])
+        new_comment = Comment.objects.create(
+            comment = request.POST['comment-post'],
+            user = commentor,
+            message = message
+        )
+        messages.success(request, f"Awesome. The new comment from { new_comment.user.first_name} has been successfully added!")
+        return redirect('show_user_wall', userid)
     else:
         messages.error(request, "Invalid request.", extra_tags = 'danger')
         return redirect('dashboard')
